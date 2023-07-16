@@ -5,6 +5,7 @@ import (
 	"crypto/ecdsa"
 	"io/ioutil"
 	"os"
+	"regexp"
 
 	"fmt"
 	"log"
@@ -112,4 +113,37 @@ func importKs() {
 	if err := os.Remove(file); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func checkAddress() {
+	re := regexp.MustCompile("^0x[0-9a-fA-F]{40}$")
+
+	fmt.Printf("is valid: %v\n", re.MatchString("0x323b5d4c32345ced77393b3530b1eed0f346429d"))
+	fmt.Printf("is valid: %v\n", re.MatchString("0xZYXb5d4c32345ced77393b3530b1eed0f346429d"))
+
+	client, err := ethclient.Dial("http://localhost:8545")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// 0x Protocol Token (ZRX) smart contract address
+	address := common.HexToAddress("0xe41d2489571d322189246dafa5ebde1f4699f498")
+	bytecode, err := client.CodeAt(context.Background(), address, nil) // nil is latest block
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	isContract := len(bytecode) > 0
+
+	fmt.Printf("is contract: %v\n", isContract)
+
+	randomUserAddress := common.HexToAddress("0x8e215d06ea7ec1fdb4fc5fd21768f4b34ee92ef4")
+	randomUserAddressBytecode, err := client.CodeAt(context.Background(), randomUserAddress, nil) // nil is latest block
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	isContract = len(randomUserAddressBytecode) > 0
+
+	fmt.Printf("is contract: %v\n", isContract) // is contract: false
 }

@@ -17,6 +17,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"goeth.com/main/transactions"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -52,6 +53,10 @@ func main() {
 	fmt.Println(pendingBlance)
 
 	generateWallet()
+
+	transactions.Query()
+
+	transactions.QueryTransactions()
 }
 
 func generateWallet() {
@@ -80,6 +85,7 @@ func generateWallet() {
 	hash := sha3.NewLegacyKeccak256()
 	hash.Write(publicKeyBytes[1:])
 	fmt.Printf(hexutil.Encode(hash.Sum(nil)[12:]))
+	fmt.Println()
 }
 
 func createKs() {
